@@ -7,30 +7,39 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework_simplejwt.authentication import JWTAuthentication
+# from .permissions import IsAdmin
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 
 class RegisterUser(APIView):
-    # def get(self, request):
-    #     users = User.objects.all()
-    #     serializer = UserSerializer(users, many=True)
-    #     return Response(serializer.data)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             user = User.objects.get(username=request.data['username'])
-            token_obj, _ = Token.objects.get_or_create(user=user)
+            token = get_tokens_for_user(user)
 
-            return Response({'payload': serializer.data, 'token': str(token_obj)}, status=status.HTTP_201_CREATED)
+            return Response({'payload': serializer.data, 'token': token}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserList(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request):
         users = User.objects.all()
