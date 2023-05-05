@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User
+from .models import User
 from rest_framework.authtoken.models import Token
 
 from rest_framework.authentication import TokenAuthentication
@@ -26,10 +26,11 @@ def get_tokens_for_user(user):
 class RegisterUser(APIView):
 
     def post(self, request):
+        print(request.data)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            user = User.objects.get(username=request.data['username'])
+            user = User.objects.get(email=request.data['email'])
             token = get_tokens_for_user(user)
 
             return Response({'payload': serializer.data, 'token': token}, status=status.HTTP_201_CREATED)
@@ -39,7 +40,7 @@ class RegisterUser(APIView):
 
 class UserList(APIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         users = User.objects.all()

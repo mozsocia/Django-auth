@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'password2']
+        fields = ['email','name' ,'password', 'password2']
 
     def validate(self, attrs):
         password = attrs.get('password')
