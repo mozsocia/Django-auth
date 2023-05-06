@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import *
+from django.contrib.auth import get_user_model
 # from django.contrib.auth.models import User
 
-
+User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
 

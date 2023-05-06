@@ -3,16 +3,19 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User
 from rest_framework.authtoken.models import Token
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 # from .permissions import IsAdmin
+from django.contrib.auth import get_user_model
+
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
+User = get_user_model()
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -29,8 +32,7 @@ class RegisterUser(APIView):
         print(request.data)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            user = User.objects.get(email=request.data['email'])
+            user = serializer.save()
             token = get_tokens_for_user(user)
 
             return Response({'payload': serializer.data, 'token': token}, status=status.HTTP_201_CREATED)
