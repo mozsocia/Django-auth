@@ -66,3 +66,15 @@ def login_user(request):
                 error_message = 'Invalid username or password.'
 
     return render(request, 'login.html', {'error_message': error_message})
+
+
+
+
+def logout_user(request):
+    # Perform any additional logic here (if needed)
+    # ...
+    
+    # Logout the user
+    auth_logout(request)
+    
+    return redirect('home')  # Replace 'home' with the appropriate URL name
