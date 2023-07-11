@@ -30,8 +30,8 @@ def signup(request):
             user = User.objects.create_user(username=username, password=password, email=email)
 
             # Create a profile for the user
-            profile = Profile(user=user, full_name=full_name, age=age)
-            profile.save()
+            profile = Profile.objects.create((user=user, full_name=full_name, age=age)
+            
 
             # Redirect to login page or any other page after successful registration
             return redirect('login')
